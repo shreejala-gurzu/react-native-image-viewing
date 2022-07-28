@@ -42,6 +42,7 @@ type Props = {
   delayLongPress?: number;
   HeaderComponent?: ComponentType<{ imageIndex: number }>;
   FooterComponent?: ComponentType<{ imageIndex: number }>;
+  children?: React.ReactNode;
 };
 
 const DEFAULT_ANIMATION_TYPE = "fade";
@@ -66,6 +67,7 @@ function ImageViewing({
   delayLongPress = DEFAULT_DELAY_LONG_PRESS,
   HeaderComponent,
   FooterComponent,
+  children,
 }: Props) {
   const imageList = useRef<VirtualizedList<ImageSource>>(null);
   const [opacity, onRequestCloseEnhanced] = useRequestClose(onRequestClose);
@@ -73,6 +75,23 @@ function ImageViewing({
   const [headerTransform, footerTransform, toggleBarsVisible] =
     useAnimatedComponents();
 
+  const [, updateState] = React.useState<any>();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
+
+  const viewabilityConfig = {
+    viewAreaCoveragePercentThreshold: 50,
+  };
+
+  const handleViewabilityConfig = ({
+    viewableItems,
+  }: {
+    viewableItems: any;
+  }) => {
+    if (viewableItems?.length > 0 && viewableItems[0].index === 1) {
+      forceUpdate();
+    }
+  };
+  
   useEffect(() => {
     if (onImageIndexChange) {
       onImageIndexChange(currentImageIndex);
@@ -121,6 +140,8 @@ function ImageViewing({
           windowSize={2}
           initialNumToRender={1}
           maxToRenderPerBatch={1}
+          onViewableItemsChanged={handleViewabilityConfig}
+          viewabilityConfig={viewabilityConfig}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           initialScrollIndex={imageIndex}
@@ -162,6 +183,8 @@ function ImageViewing({
           </Animated.View>
         )}
       </View>
+
+      {children}
     </Modal>
   );
 }
