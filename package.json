@@ -1,5 +1,5 @@
 {
-  "name": "custom-react-native-image-viewing",
+  "name": "react-native-custom-image-viewing",
   "version": "0.2.3",
   "description": "React Native modal component for viewing images as a sliding gallery",
   "main": "dist/index.js",
